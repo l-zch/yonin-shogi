@@ -1,5 +1,5 @@
 <template>
-    <div class="border border-black">
+    <div class="border-[0.1vmin] border-black">
         
     </div>
 </template>
