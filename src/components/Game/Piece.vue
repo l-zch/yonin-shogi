@@ -1,7 +1,7 @@
 <template>
-    <div class="piece relative flex rotate-90" :style="{transform: `rotate(${90*props.facing}deg) scale(${size[type]})`}">
-        <text class="m-auto z-10 text-[55cqw] font-normal">{{symbols[type][promoted]}}</text>
-        <img class="absolute" :src="piece_path_url[props.facing]">
+    <div class="piece relative flex rotate-90 aspect-square" :style="{transform: `rotate(${90*props.facing}deg) scale(${size[type]})`}">
+        <text class="m-auto z-10 text-[55cqw] font-normal">{{symbols[type]}}</text>
+        <img class="absolute w-full h-full" :src="piece_path_url[props.facing]">
     </div>
 </template>
 
@@ -15,13 +15,12 @@ const piece_path = [
 ]
 
 
-const symbols = [['步', 'と'], ['銀', '全'], ['金', ''], ['飛', '龍'], ['王', ''],]
+const symbols = ['步', '銀', '金', '飛', '王', 'と', '全', '龍']
 const size = [0.8, 0.9, 0.9, 1, 1]
 
 const props = defineProps({
     facing: Number,  // 0:forward 1:right 2:backward 3:left
-    type: Number,    // 0:pawn 1:silver 2:gold 3:rook 4:king
-    promoted: Number // 0:false 1:true
+    type: Number,    // 0:pawn 1:silver 2:gold 3:rook 4:king 5:prom pawn 6:prom silver 7: dragon
 })
 
 const getImageUrl = (name) => {
