@@ -1,7 +1,7 @@
 <template>
     <div class="piece relative flex rotate-90" :style="{transform: `rotate(${90*props.facing}deg) scale(${size[type]})`}">
         <text class="m-auto z-10 text-[55cqw] font-normal">{{symbols[type][promoted]}}</text>
-        <img class="absolute" :src="getImageUrl(piece_path[props.facing])">
+        <img class="absolute" :src="piece_path_url[props.facing]">
     </div>
 </template>
 
@@ -13,6 +13,7 @@ const piece_path = [
     "pieceBackward.png",
     "pieceLeft.png"
 ]
+
 
 const symbols = [['步', 'と'], ['銀', '全'], ['金', ''], ['飛', '龍'], ['王', ''],]
 const size = [0.8, 0.9, 0.9, 1, 1]
@@ -27,6 +28,7 @@ const getImageUrl = (name) => {
     return new URL(`../../assets/${name}`, import.meta.url).href
 }
 
+const piece_path_url = piece_path.map(getImageUrl)
 </script>
 
 <style scoped>

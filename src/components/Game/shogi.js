@@ -1,22 +1,37 @@
-class Piece {
+export class Piece {
     constructor(id, owner) {
         this.id = id;
         this.owner = owner;
     }
 
-    canMove(square) {}
+    canMove(square) {
+        return true
+    }
 }
 
-function createShogiBoard() {
+export function createShogiBoard() {
     const board = Array.from({ length: 9 }, () =>
         Array(9)
             .fill()
             .map((u) => new Piece(-1, -1))
     );
-    setup(board)
-    return board
+    setup(board);
+    return board;
 }
 
+export function move(board, fromPoint, toPoint) {
+    const [fromX, fromY] = fromPoint;
+    const [toX, toY] = toPoint;
+    if (fromX == -1) {
+        // TODO: drop piece
+        return
+    }
+    const piece = board[fromX][fromY];
+    if (piece.canMove(toPoint)) {
+        board[toX][toY] = piece;
+        board[fromX][fromY] = new Piece(-1, -1);
+    }
+}
 
 function setup(board) {
     [
@@ -67,6 +82,3 @@ function rotate(point, center, n) {
 
     return [rotatedX + center[0], rotatedY + center[1]];
 }
-
-let board = createShogiBoard()
-print_board(board)
