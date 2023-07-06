@@ -18,12 +18,20 @@ socket.on('update', (res) => {
     gameState.players = res[1];
 });
 
-export function move(origin, destination, pieceType, promotion) {
+export function move(origin, destination, promotion) {
     const { viewer } = useGameStore();
     socket.emit('move', [
         rotate(origin, [4, 4], viewer.id),
         rotate(destination, [4, 4], viewer.id),
-        promotion ? [5, 6, -1, 7][pieceType] : pieceType
+        promotion
+    ]);
+}
+
+export function drop(destination, pieceType) {
+    const { viewer } = useGameStore();
+    socket.emit('drop', [
+        rotate(destination, [4, 4], viewer.id),
+        pieceType
     ]);
 }
 

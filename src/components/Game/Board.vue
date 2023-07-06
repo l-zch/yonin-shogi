@@ -18,7 +18,7 @@
 import { ref, reactive } from 'vue';
 import Square from './Square.vue'
 import { useGameStore } from '../../stores/game'
-import { move } from './socket'
+import { drop, move } from './socket'
 
 const { board, selection, select, deselect, isSelected } = useGameStore();
 
@@ -29,7 +29,10 @@ function selectSquare(x, y) {
     } else if (x == selection.x && y == selection.y) {
         deselect()
     } else {
-        move([selection.x, selection.y], [x, y],selection.dropPiece?.type, 0);
+        if(selection.dropPiece)
+            drop([x, y], selection.dropPiece.type);
+        else
+            move([selection.x, selection.y], [x, y], 0);
         deselect()
     }
 }
