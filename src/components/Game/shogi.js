@@ -1,12 +1,22 @@
-export class Piece {
-    constructor(id, owner) {
-        this.id = id;
-        this.owner = owner;
-    }
+import { rotate } from './utils'
 
-    canMove(square) {
-        return true
+export class Piece {
+    constructor(type, facing) {
+        this.type = type;
+        this.facing = facing;
     }
+}
+
+export function canMove(board, piece, square) {
+
+}
+
+export function canDrop(board, piece, square){
+    return true
+}
+
+export function canPromote(board, piece, square) {
+    
 }
 
 export function createShogiBoard() {
@@ -15,21 +25,35 @@ export function createShogiBoard() {
             .fill()
             .map((u) => new Piece(-1, -1))
     );
-    setup(board);
+    // setup(board);
     return board;
 }
 
-export function move(board, fromPoint, toPoint) {
+export function createPiecesInHand() {
+    return [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ];
+}
+
+export function move(board, fromPoint, toPoint, dropPiece, promotion) {
     const [fromX, fromY] = fromPoint;
     const [toX, toY] = toPoint;
-    if (fromX == -1) {
-        // TODO: drop piece
-        return
-    }
-    const piece = board[fromX][fromY];
-    if (piece.canMove(toPoint)) {
+    if (!dropPiece) {
+        const piece = board[fromX][fromY];
+        if (piece.canMove(toPoint)) {
+            if (promotion) {
+                piece.promote()
+            }
+            board[toX][toY] = piece;
+            board[fromX][fromY] = new Piece(-1, -1);
+        }
+    } else {
+        const piece = new Piece(dropPiece.type, dropPiece.facing)
         board[toX][toY] = piece;
-        board[fromX][fromY] = new Piece(-1, -1);
+        return;
     }
 }
 
@@ -50,35 +74,4 @@ function setup(board) {
             board[rotatedX][rotatedY] = new Piece(args[1], n);
         }
     });
-}
-
-function print(s, end = '\n') {
-    process.stdout.write(s + end);
-}
-
-function print_board(board) {
-    for (let i = 0; i < 9; ++i) {
-        for (let j = 0; j < 9; ++j) {
-            let piece = board[i][j];
-            if (piece.id == -1) {
-                print('  ', (end = ''));
-                continue;
-            }
-            print(['步', '銀', '金', '飛', '王'][piece.id], (end = ''));
-        }
-        print('');
-    }
-}
-
-function rotate(point, center, n) {
-    let rotatedX = point[0] - center[0];
-    let rotatedY = point[1] - center[1];
-
-    for (let i = 0; i < n; i++) {
-        const tempX = rotatedX;
-        rotatedX = rotatedY;
-        rotatedY = -tempX;
-    }
-
-    return [rotatedX + center[0], rotatedY + center[1]];
 }
