@@ -2,7 +2,7 @@
     <div>
         <div class="aspect-square relative w-full h-full flex" :style="{ transform: `scale(${size[type]})` }">
 
-            <div class="bg-black w-[50%] z-10 m-auto aspect-[3/4]"
+            <div class="bg-black h-[70%] max-w-[50%] z-10 m-auto aspect-[3/4]"
                 :style="{ 'mask': getMask(type), '-webkit-mask': getMask(type) }"></div>
 
             <img class="absolute w-full h-full" :src="piece_path_url[props.facing]">
