@@ -2,7 +2,7 @@
     <div class="flex flex-wrap">
         <Board></Board>
         <div class="w-full max-w-[100vmin]  bg-white">
-            <InfoBar v-for="i in 4" :owner="i-1"></InfoBar>
+            <InfoBar v-for="i in 4" :facing="i-1"></InfoBar>
         </div>
         <button class="border" @click="startGame">start game</button>
     </div>

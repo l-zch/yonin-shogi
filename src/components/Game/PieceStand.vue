@@ -2,7 +2,7 @@
     <div class="bg-red-400  flex flex-row">
         <div v-for="(number, type) in props.piecesInHand" class="relative h-full" @click="selectPiece(type)">
             <div class="absolute text-[3vmin] shadow-white top-0 right-[10%] z-10 text-stroke"> {{ number }} </div>
-            <PieceVue :type="type" :facing="0" class="h-full" ></PieceVue>
+            <PieceVue :type="type" :facing="props.facing" class="h-full" ></PieceVue>
         </div>
     </div>
 </template>
