@@ -2,7 +2,7 @@
     <div class="flex flex-wrap">
         <Board></Board>
         <div class="w-full max-w-[100vmin]  bg-white">
-            <InfoBar v-for="i in 4" :facing="i-1"></InfoBar>
+            <InfoBar v-for="i in 4" :facing="i - 1"></InfoBar>
             <button class="border m-[10px]" @click="startGame">new game</button>
         </div>
     </div>
@@ -17,10 +17,10 @@ import { socket } from "./Game/socket"
 import { useGameStore } from "../stores/game"
 
 const { viewer } = useGameStore()
-viewer.id = 0
+viewer.facing = 0
 
 function startGame() {
-   socket.emit('join') 
+    socket.emit('join')
 }
 </script>
 
