@@ -9,9 +9,10 @@ const apiURL = 'https://yonin-shogi.s1091026.repl.co/game'; // TODO
 export const socket = io(apiURL);
 
 socket.on('update', (res) => {
-    const { viewer, board, players } = useGameStore()
+    const { viewer, currentPlayer,board, players } = useGameStore()
     Object.assign(board, convertToBoard(res[0], viewer.id));
-    Object.assign(players, convertPlayers(res[1], viewer.id))
+    Object.assign(players, convertPlayers(res[1], viewer.id));
+    currentPlayer.facing = (res[2] - viewer.id + 4) % 4
     // for (let i = 0; i < 4;++i)
         // piecesInHand[(viewer.id-i+4)%4] = res[1][i]
     // res[1].forEach((pieces, index) => piecesInHand[(viewer.id-index+4)%4] = pieces)
