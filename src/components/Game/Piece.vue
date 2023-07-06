@@ -1,11 +1,9 @@
 <template>
-    <div>
-        <div class="aspect-square relative w-full h-full flex" :style="{ transform: `scale(${size[type]})` }">
-
+    <div :class="['transition-all', props.selected ? 'selected' : '']">
+        <div class="aspect-square relative w-full h-full flex select-none a" :style="{ transform: `scale(${size[type]})` }">
             <div class="bg-black h-[70%] max-w-[50%] z-10 m-auto aspect-[3/4]"
                 :style="{ 'mask': getMask(type), '-webkit-mask': getMask(type) }"></div>
-
-            <img class="absolute w-full h-full" :src="piece_path_url[props.facing]">
+            <img draggable="false" class="absolute w-full h-full" :src="piece_path_url[props.facing]">
         </div>
     </div>
 </template>
@@ -27,6 +25,7 @@ const size = [0.8, 0.9, 0.9, 1, 1]
 const props = defineProps({
     facing: Number,  // 0:forward 1:right 2:backward 3:left
     type: Number,    // 0:pawn 1:silver 2:gold 3:rook 4:king 5:prom pawn 6:prom silver 7: dragon
+    selected: Boolean
 })
 
 const getImageUrl = (name) => {
@@ -43,4 +42,12 @@ const getMask = (type) => {
 const piece_path_url = piece_path.map(getImageUrl)
 </script>
 
-<style scoped></style>
+<style scoped>
+.selected {
+    filter: drop-shadow(0.9vmin 0.9vmin 1vmin #2b2b2b);
+    transform: scale(101%) translate(0, -1vmin);
+}
+.a{
+     -webkit-user-drag: none;
+}
+</style>

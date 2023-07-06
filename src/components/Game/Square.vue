@@ -1,8 +1,10 @@
 <template>
-    <div class="border-[0.1vmin] border-black flex relative">
-        <div class="absolute w-full h-full">
-            <Piece v-if="props.piece.type != -1" class="m-auto w-full h-full"
-                :style="{ transform: `rotate(${90 * props.piece.facing}deg)` }" :facing="props.piece.facing"
+    <div class="border-[0.1vmin] border-black relative select-none">
+        <div class="absolute w-full h-full" :style="{ transform: `rotate(${90 * props.piece.facing}deg)` }">
+            <div class="absolute w-full h-full bg-white bg-opacity-30 z-10" v-if="selected"></div>
+            <Piece v-if="props.piece.type != -1" class="absolute w-full h-full z-20"
+                :facing="props.piece.facing"
+                :selected="selected"
                 :type="props.piece.type"></Piece>
         </div>
     </div>
@@ -12,6 +14,10 @@
 import Piece from "./Piece.vue"
 
 const props = defineProps({
-    piece: Object
+    piece: Object,
+    selected: Boolean
 })
 </script>
+
+<style>
+</style>

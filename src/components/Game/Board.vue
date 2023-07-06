@@ -8,7 +8,8 @@
         </div>
         <div class="m-[2%] w-[96%] h-[96%] grid border-[0.1vmin] border-black">
             <div class="grid grid-cols-9" v-for="i in 9">
-                <Square v-for="j in 9" :piece="board[i - 1][j - 1]" @click="selectSquare(i - 1, j - 1)"></Square>
+                <Square v-for="j in 9" :piece="board[i - 1][j - 1]" @click="selectSquare(i - 1, j - 1)"
+                    :selected="(i - 1) == selection.x && (j - 1) == selection.y"></Square>
             </div>
         </div>
     </div>
@@ -29,7 +30,7 @@ function selectSquare(x, y) {
     } else if (x == selection.x && y == selection.y) {
         deselect()
     } else {
-        if(selection.dropPiece)
+        if (selection.dropPiece)
             drop([x, y], selection.dropPiece.type);
         else
             move([selection.x, selection.y], [x, y], 0);
