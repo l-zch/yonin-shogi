@@ -42,3 +42,9 @@ export function rotate(point, center, n) {
 
     return [rotatedX + center[0], rotatedY + center[1]];
 }
+
+export function convertPlayers(arr, rotation){
+    const length =  4 // arr.length
+    const shifts = rotation%length
+    return [...arr.slice(shifts), ...arr.slice(0,shifts)]
+}

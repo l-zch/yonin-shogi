@@ -1,6 +1,6 @@
 <template>
     <div class="bg-red-400  flex flex-row">
-        <div v-for="(number, type) in props.piecesInHand" class="relative h-full" @click="selectPiece(type)">
+        <div v-for="(number, type) in players[props.facing].piecesInHand" class="relative h-full" @click="selectPiece(type)">
             <div class="absolute text-[3vmin] shadow-white top-0 right-[10%] z-10 text-stroke"> {{ number }} </div>
             <PieceVue :type="type" :facing="props.facing" class="h-full" ></PieceVue>
         </div>
@@ -14,9 +14,8 @@ import { Piece } from './shogi'
 
 const props = defineProps({
     facing: Number,
-    piecesInHand: Array
 })
-const { select, deselect } = useGameStore();
+const { select, deselect, players } = useGameStore();
 
 function selectPiece(type) {
     deselect();
