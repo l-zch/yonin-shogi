@@ -1,8 +1,12 @@
 <template>
     <div :class="['transition-all', props.selected ? 'selected' : '']">
-        <div class="aspect-square relative w-full h-full flex select-none a" :style="{ transform: `scale(${size[type]})` }">
-            <div class="bg-black h-[70%] max-w-[50%] z-10 m-auto aspect-[3/4]"
-                :style="{ 'mask': getMask(type), '-webkit-mask': getMask(type) }"></div>
+        <div class="aspect-square relative w-full h-full flex select-none" :style="{ transform: `scale(${size[type]})` }">
+            <div class="max-w-[50%] h-[70%] z-10 m-auto aspect-[3/4]"
+                :style="{
+                     'height': `${size[type] * 70}%`, 
+                     'background-color': type < 5 ? 'black' : 'red', 
+                     'mask': getMask(type), '-webkit-mask': getMask(type) }">
+            </div>
             <img draggable="false" class="absolute w-full h-full" :src="piece_path_url[props.facing]">
         </div>
     </div>
@@ -18,8 +22,7 @@ const piece_path = [
 ]
 
 
-const symbols = ['步', '銀', '金', '飛', '王', 'と', '全', '龍']
-const size = [0.8, 0.9, 0.9, 1, 1]
+const size = [0.8, 0.9, 0.9, 1, 1, 0.8, 0.9, 1]
 
 
 const props = defineProps({
@@ -47,7 +50,5 @@ const piece_path_url = piece_path.map(getImageUrl)
     filter: drop-shadow(0.9vmin 0.9vmin 1vmin #2b2b2b);
     transform: scale(101%) translate(0, -1vmin);
 }
-.a{
-     -webkit-user-drag: none;
-}
+
 </style>
