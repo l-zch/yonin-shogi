@@ -13,7 +13,14 @@ export function canDrop(board, piece, square) {
     return true;
 }
 
-export function canPromote(board, piece, square) {}
+export function canPromote(board, fromPoint, toPoint) {
+    const [fromX, fromY] = fromPoint
+    const piece = board[fromX][fromY]
+    // if(piece.type < 3)
+    //     return true
+    // return false
+    return true
+}
 
 export function createShogiBoard() {
     const board = Array.from({ length: 9 }, () =>
