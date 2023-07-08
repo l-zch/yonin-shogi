@@ -11,12 +11,13 @@
                 <div class="relative" v-for="j in 9">
                     <Square class="w-full h-full" :piece="board[i - 1][j - 1]" @click="selectSquare(i - 1, j - 1)"
                         :selected="(i - 1) == selection.x && (j - 1) == selection.y"> </Square>
-                        <div class="promotionDialog" v-if="(i - 1) == promotionDialog.x && (j - 1) == promotionDialog.y">
-                            <Piece :facing="promotionDialog.facing" :type="[5,6,-1,7,-1,-1,-1,-1][promotionDialog.type]" :selected="false"
-                                @click="promotionDialog.confirm(true)"></Piece>
-                            <Piece :facing="promotionDialog.facing" :type="promotionDialog.type" :selected="false"
-                                @click="promotionDialog.confirm(false)"></Piece>
-                        </div>
+                    <div v-if="(i - 1) == promotionDialog.x && (j - 1) == promotionDialog.y" class="promotionDialog"
+                        :style="{ transform: `rotate(${90*promotionDialog.facing}deg) ` }">
+                        <Piece :facing="promotionDialog.facing" :type="[5, 6, -1, 7, -1, -1, -1, -1][promotionDialog.type]"
+                            :selected="false" @click="promotionDialog.confirm(true)"></Piece>
+                        <Piece :facing="promotionDialog.facing" :type="promotionDialog.type" :selected="false"
+                            @click="promotionDialog.confirm(false)"></Piece>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,9 +79,8 @@ function createDialog(x, y) {
     @apply bg-[url("https://pic.616pic.com/ys_img/00/09/26/HdlzqX0hmc.jpg")] bg-cover
 }
 
-.promotionDialog{
-    filter:drop-shadow(0 1vmin 1vmin #2b2b2b);
-    @apply
-    bg-white absolute w-full h-[200%] top-0 flex flex-col rounded-[1vmin] z-10
+.promotionDialog {
+    filter: drop-shadow(0 1vmin 1vmin #2b2b2b);
+    @apply bg-white absolute w-full h-[200%] top-0 origin-[50%_25%] flex flex-col rounded-[1vmin] z-10
 }
 </style>
