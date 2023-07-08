@@ -7,21 +7,6 @@ export class Piece {
     }
 }
 
-export function canMove(board, piece, square) {}
-
-export function canDrop(board, piece, square) {
-    return true;
-}
-
-export function canPromote(board, fromPoint, toPoint) {
-    const [fromX, fromY] = fromPoint
-    const piece = board[fromX][fromY]
-    // if(piece.type < 3)
-    //     return true
-    // return false
-    return true
-}
-
 export function createShogiBoard() {
     const board = Array.from({ length: 9 }, () =>
         Array(9)
@@ -37,25 +22,6 @@ export function createPlayers() {
     return Array.from({ length: 4 }, () => {
         return { piecesInHand: [0, 0, 0, 0]}
     })
-}
-
-export function move(board, fromPoint, toPoint, dropPiece, promotion) {
-    const [fromX, fromY] = fromPoint;
-    const [toX, toY] = toPoint;
-    if (!dropPiece) {
-        const piece = board[fromX][fromY];
-        if (piece.canMove(toPoint)) {
-            if (promotion) {
-                piece.promote();
-            }
-            board[toX][toY] = piece;
-            board[fromX][fromY] = new Piece(-1, -1);
-        }
-    } else {
-        const piece = new Piece(dropPiece.type, dropPiece.facing);
-        board[toX][toY] = piece;
-        return;
-    }
 }
 
 function setup(board) {

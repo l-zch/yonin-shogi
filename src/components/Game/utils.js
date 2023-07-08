@@ -34,7 +34,7 @@ export function rotate(point, center, n) {
     let rotatedX = point[0] - center[0];
     let rotatedY = point[1] - center[1];
 
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < (n+4)%4; i++) {
         const tempX = rotatedX;
         rotatedX = rotatedY;
         rotatedY = -tempX;
