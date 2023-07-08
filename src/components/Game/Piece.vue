@@ -4,26 +4,19 @@
             <div class="max-w-[50%] h-[70%] z-10 m-auto aspect-[3/4]"
                 :style="{
                      'height': `${size[type] * 70}%`, 
-                     'background-color': type < 5 ? 'black' : 'red', 
+                     'background-color': type < 5 ? pieceConfig.color : pieceConfig.promotedColor, 
                      'mask': getMask(type), '-webkit-mask': getMask(type) }">
             </div>
-            <img draggable="false" class="absolute w-full h-full" :src="piece_path_url[props.facing]">
+            <img draggable="false" class="absolute w-full h-full" :src="getAssetURL('body/'+imagePath[props.facing])">
         </div>
     </div>
 </template>
 
 <script setup>
-
-const piece_path = [
-    "pieceForward.png",
-    "pieceRight.png",
-    "pieceBackward.png",
-    "pieceLeft.png"
-]
+import { useConfigStore } from '../../stores/config'
 
 
-const size = [0.8, 0.9, 0.9, 1, 1, 0.8, 0.9, 1]
-
+const { pieceConfig } = useConfigStore()
 
 const props = defineProps({
     facing: Number,  // 0:forward 1:right 2:backward 3:left
@@ -31,18 +24,25 @@ const props = defineProps({
     selected: Boolean
 })
 
-const getImageUrl = (name) => {
-    return new URL(`../../assets/${name}`, import.meta.url).href
+const imagePath = [
+    "pieceForward.png",
+    "pieceRight.png",
+    "pieceBackward.png",
+    "pieceLeft.png"
+]
+const size = [0.8, 0.9, 0.9, 1, 1, 0.8, 0.9, 1]
+
+
+const getAssetURL = (path) => {
+    return new URL(`../../assets/appearance/piece/${path}`, import.meta.url).href
 }
 
-const textStyle = "hai-yan"
 const getMask = (type) => {
     const mapping = ['p0', 's0', 'g0', 'r0', 'k0', 'p1', 's1', 'r1']
-    const url = getImageUrl(`appearance/piece/text/${textStyle}/${[mapping[type]]}.svg`)
+    const url = getAssetURL(`text/${pieceConfig.font}/${[mapping[type]]}.svg`)
     return `url(${url}) no-repeat center / contain`
 }
 
-const piece_path_url = piece_path.map(getImageUrl)
 </script>
 
 <style scoped>
