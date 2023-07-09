@@ -26,6 +26,8 @@ export function convertToBoard(arr, rotation) {
 
 function convertToPiece(pieceData, rotation) {
     const { type, owner } = pieceData
+    if(type==-1 || owner == -1)
+        return new Piece(-1,-1)
     return new Piece(type, (owner-rotation+4)%4)
 }
 
@@ -47,4 +49,28 @@ export function convertPlayers(arr, rotation){
     const length =  4 // arr.length
     const shifts = rotation%length
     return [...arr.slice(shifts), ...arr.slice(0,shifts)]
+}
+
+export function applyOnLine(origin, direction, fn) {
+    let [x, y] = origin;
+    let [dx, dy] = direction;
+    x += dx
+    y += dy
+    while (inRange(x, 0, 8) && inRange(y, 0, 8)) {
+        if (fn(x, y)) break;
+        x += dx;
+        y += dy;
+    }
+}
+
+export function inRange(n, min, max){
+    return n >= min && n <= max;
+}
+
+export function includePoint(points, point) {
+    return points.some(([x,y]) => x === point[0] && y === point[1])
+}
+
+export function sumOfPoints(pointA, pointB) {
+    return [pointA[0]+pointB[0], pointA[1]+pointB[1]]
 }
