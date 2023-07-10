@@ -1,4 +1,4 @@
-import { Piece } from "./shogi";
+import { Piece } from "./structure";
 
 export function convertToBoard(arr, rotation) {
     const length = 9; // Math.sqrt(arr.length)
