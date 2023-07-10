@@ -1,35 +1,3 @@
-import { Piece } from './structure';
-
-export function convertToBoard(arr, rotation) {
-    const length = 9; // Math.sqrt(arr.length)
-    const board = [];
-
-    for (let i = 0; i < length; i++) {
-        const row = [];
-        for (let j = 0; j < length; j++) {
-            let index;
-            if (rotation == 0) {
-                index = i * length + j;
-            } else if (rotation == 1) {
-                index = length - 1 - i + j * length;
-            } else if (rotation == 2) {
-                index = (length - 1 - i) * length + (length - 1 - j);
-            } else {
-                index = i + (length - 1 - j) * length;
-            }
-            row.push(convertToPiece(arr[index], rotation));
-        }
-        board.push(row);
-    }
-    return board;
-}
-
-function convertToPiece(pieceData, rotation) {
-    const { type, owner } = pieceData;
-    if (type == -1 || owner == -1) return new Piece(-1, -1);
-    return new Piece(type, (owner - rotation + 4) % 4);
-}
-
 export function rotate(point, center, n) {
     let rotatedX = point[0] - center[0];
     let rotatedY = point[1] - center[1];
@@ -43,11 +11,6 @@ export function rotate(point, center, n) {
     return [rotatedX + center[0], rotatedY + center[1]];
 }
 
-export function convertPlayers(arr, rotation) {
-    const length = 4; // arr.length
-    const shifts = rotation % length;
-    return [...arr.slice(shifts), ...arr.slice(0, shifts)];
-}
 
 export function applyOnLine(origin, direction, fn) {
     let [x, y] = origin;
