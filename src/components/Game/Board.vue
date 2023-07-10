@@ -19,7 +19,7 @@
                             @click="promotionDialog.confirm(false)"></Piece>
                     </div>
                     <div class="absolute w-full h-full flex top-0" v-if="hint[i-1][j-1]" @click="selectHint(i-1, j-1)">
-                        <div class="m-auto top-1/2 w-[20%] h-[20%] rounded-[50%] bg-slate-500 bg-opacity-70" v-if="!debugMode.on"></div>
+                        <div class="m-auto top-1/2 w-[20%] h-[20%] rounded-[50%] bg-slate-500 bg-opacity-70" v-if="!(mode.value == 'debug')"></div>
                     </div>
                 </div>
             </div>
@@ -33,35 +33,33 @@ import Square from './Square.vue'
 import Piece from './Piece.vue';
 import { useGameStore } from '../../stores/game'
 import { useConfigStore } from '../../stores/config'
-import { drop, move } from './socket'
-import { canSelect, canDrop, canPromote, getValidities } from './validator';
+import { drop, move } from './executor'
+import { canSelect, canPromote } from './validator';
 
 
 const { board, selection, select, deselect, isSelected, hint } = useGameStore();
-const { boardConfig, debugMode } = useConfigStore();
+const { boardConfig, mode } = useConfigStore();
 
 const promotionDialog = reactive({ x: -1, y: -1, facing: -1, type: -1, confirm: () => { } })
 
 
 function selectSquare(x, y) {
     promotionDialog.x = -1
-    if (!isSelected())
-        if (canSelect(board[x][y]))
-            select(x, y)
-        else deselect()
-    else if (selection.dropPiece && canDrop([x, y], selection.dropPiece))
-        drop([x, y], selection.dropPiece.type);
-    else 
+    if (!isSelected() && canSelect(board[x][y]))
+        select(x, y)
+    else
         deselect()
 }
 
 function selectHint(x, y) {
-    if (canPromote(board, [selection.x, selection.y], [x, y])) {
+    if (selection.dropPiece)
+        drop([x, y], selection.dropPiece.type);
+    else if (canPromote(board, [selection.x, selection.y], [x, y])) {
         showPromoteDialog(x, y)
-    } else {
+        return
+    } else
         move([selection.x, selection.y], [x, y], false);
-        deselect()
-    }
+    deselect()
 }
 
 function showPromoteDialog(x, y) {

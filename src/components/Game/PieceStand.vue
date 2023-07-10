@@ -4,7 +4,7 @@
             :class="['relative h-full', number == 0 ? 'opacity-60' : '']" @click="selectPiece(type, number)">
             <div class="absolute text-[3vmin] shadow-white top-0 right-[10%] z-10 text-stroke"> {{ number }} </div>
             <PieceVue :type="type" :facing="props.facing" class="h-full"
-                :selected="isSelected(type)">
+                :selected="selection.dropPiece && selection.dropPiece.type == type && selection.dropPiece.facing == props.facing">
             </PieceVue>
         </div>
     </div>
@@ -13,22 +13,21 @@
 <script setup>
 import PieceVue from './Piece.vue'
 import { useGameStore } from '../../stores/game'
-import { Piece } from './shogi'
+import { canSelect } from './validator'
+import { Piece } from './structure'
 
 const props = defineProps({
     facing: Number,
 })
-const { select, selection, deselect, players } = useGameStore();
+const { select, deselect, isSelected, selection, currentPlayer, players } = useGameStore();
 
-function isSelected(type) {
-    return selection.dropPiece && selection.dropPiece.type == type && selection.dropPiece.facing == props.facing
-}
 function selectPiece(type, number) {
-    
-    if(isSelected(type))
-        deselect();
-    else if(number != 0)
-        select(-1, -1, new Piece(type, props.facing))
+    const piece = new Piece(type, props.facing)
+    if (isSelected())
+        deselect()
+    else if (number != 0 && canSelect(piece)) {
+        select(-1, -1, piece)
+    }
 }
 
 </script>
