@@ -1,6 +1,7 @@
-import { rotate } from '../utils';
-import { Piece, createShogiBoard } from '../structure';
+import { rotate } from '../entity/utils';
+import { Piece, createShogiBoard } from '../entity/structure';
 import { useGameStore } from '../../../stores/game';
+import {} from validator
 
 export const useLocal = () => {
     return { setup, move, drop };
@@ -39,7 +40,7 @@ function move(origin, destination, promotion) {
     board[toX][toY] = promotion ? promote(piece) : piece;
     if (capturedPiece.type != -1)
         players[currentPlayer.facing].piecesInHand[[0,1,2,3,4,0,1,3][capturedPiece.type]] += 1
-    currentPlayer.facing = (currentPlayer.facing + 1) % 4;
+    update()
 }
 
 function drop(destination, pieceType) {
@@ -47,5 +48,11 @@ function drop(destination, pieceType) {
     const [x, y] = destination;
     board[x][y] = new Piece(pieceType, currentPlayer.facing);
     players[currentPlayer.facing].piecesInHand[pieceType] -= 1;
+    update()
+}
+
+function update() {
+    const { board, currentPlayer,players } = useGameStore();
+
     currentPlayer.facing = (currentPlayer.facing + 1) % 4;
 }

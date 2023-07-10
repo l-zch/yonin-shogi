@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client';
-import { rotate, convertToBoard, convertPlayers } from '../utils';
+import { rotate, convertToBoard, convertPlayers } from '../entity/utils';
 import { useGameStore } from '../../../stores/game';
 
 const apiURL = 'https://yonin-shogi.s1091026.repl.co/game';

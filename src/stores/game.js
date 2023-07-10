@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia';
 import { reactive } from 'vue';
-import { createShogiBoard, createPlayers } from '../components/Game/structure';
+import {
+    createShogiBoard,
+    createPlayers
+} from '../components/Game/entity/structure';
 import { getValidities } from '../components/Game/validator';
 
 export const useGameStore = defineStore('game', () => {
