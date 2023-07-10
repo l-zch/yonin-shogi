@@ -1,12 +1,24 @@
-import { toRaw } from "vue";
 import { useConfigStore } from "../../stores/config";
 import { useGameStore } from "../../stores/game"
-import { Piece } from "./shogi";
+import { Piece } from "./structure";
 import { rotate, inRange, applyOnLine, includePoint, sumOfPoints } from "./utils"
+import { toRaw } from "vue";
 
+const inDebugMode = () => useConfigStore().mode.value == "debug" 
 
-function inDebugMode() {
-    return useConfigStore().debugMode.on    
+export function getValidities() {
+    const { board, currentPlayer, selection } = useGameStore();
+    const validityDefault = inDebugMode()
+    const validities = Array(9)
+        .fill(0)
+        .map((x) => Array(9).fill(validityDefault));
+    if (inDebugMode()) validities[selection.x][selection.y] = false;
+    else
+        for (const [x, y] of selection.dropPiece
+            ? getDroppablePoints(toRaw(board), toRaw(currentPlayer), toRaw(selection.dropPiece))
+            : getValidPoints(toRaw(board), toRaw(currentPlayer), [selection.x, selection.y]))
+            validities[x][y] = true;
+    return validities;
 }
 
 export function canSelect(piece){
@@ -15,6 +27,17 @@ export function canSelect(piece){
     return piece.facing == currentPlayer.facing && piece.type != -1 
 }
 
+export function canPromote(board, fromPoint, toPoint) {
+    const { currentPlayer } = useGameStore()
+    const [fromX, fromY] = fromPoint 
+    const piece = board[fromX][fromY]
+    if (inDebugMode()) return true
+    if ([0,1,3].includes(piece.type)) {
+        const [fromX, fromY] = rotate(fromPoint, [4,4], -currentPlayer.facing)
+        const [toX, toY] = rotate(toPoint, [4,4], -currentPlayer.facing)
+        return fromX  < 3 || toX < 3 
+    }
+}
 
 function isOnBoard(x, y){
     return inRange(x, 0, 8) && inRange(y, 0, 8)
@@ -65,7 +88,6 @@ function getReachablePoints(board, point) {
 }
 
 
-
 function isThreatened(board, point) {
     const [x, y] = point
     const piece = board[x][y]
@@ -94,49 +116,92 @@ function isThreatened(board, point) {
 }
 
 
-function getValidPoints(board, currentPlayer, point) {
+function getPointKing(board, player) {
+    let pointKing = [];
+    for (const [x, row] of board.entries())
+        for (const [y, piece] of row.entries())
+            if (piece.type == 4 && piece.facing == player.facing)
+                pointKing = [x, y];
+    return pointKing
+
+}
+
+function isCheckmated(board, player) {
+    for (const [x, row] of board.entries())
+        for(const [y, piece] of row.entries())
+            if (piece.facing == player.facing && getValidPoints(board, player, [x,y]).length)
+                return false
+    return true
+}
+
+function getValidPoints(board, player, point) {
     const [x, y] = point;
+    const piece = board[x][y]
+    let [kingX, kingY] = getPointKing(board, player)
     const reachablePoints = getReachablePoints(board, [x, y]);
     const validPoints = reachablePoints.filter(([toX, toY]) => {
+        if (board[toX][toY].type == 4) return false
         const newBoard = board.map((row) => row.slice());
+        if (piece.type == 4) {
+            kingX = toX
+            kingY = toY
+        }
         newBoard[x][y] = new Piece(-1, -1);
-        newBoard[toX][toY] = board[x][y];
-        let pointKing = [];
-        for (const [x, row] of newBoard.entries())
-            for (const [y, piece] of row.entries())
-                if (piece.type == 4 && piece.facing == currentPlayer.facing)
-                    pointKing = [x, y];
-        return !isThreatened(newBoard, pointKing);
+        newBoard[toX][toY] = piece;
+        return !isThreatened(newBoard, [kingX, kingY])
     });
     return validPoints;
 }
 
-export function getValidities(point) {
-    const { board, currentPlayer } = useGameStore();
-    const { debugMode } = useConfigStore();
-    const validities = Array(9)
-        .fill(0)
-        .map((x) => Array(9).fill(debugMode.on));
-    if (debugMode.on) 
-        validities[point[0]][point[1]] = false
-    else
-        for (const [x, y] of getValidPoints(toRaw(board), toRaw(currentPlayer), point))
-            validities[x][y] = true;
-    return validities;
+function getColumnsWithPawn(board, currentPlayer) {
+    const columnsWithPawn = []
+    for(let y = 0; y < 9; ++y)
+        applyOnLine(
+            rotate([-1, y], [4,4], currentPlayer.facing),
+            rotate([1, 0], [0,0], currentPlayer.facing),
+            (x, y) => {
+            const piece = board[x][y]
+            if (piece.type == 0 && piece.facing == currentPlayer.facing) {
+                columnsWithPawn.push( currentPlayer.facing % 2 ? x : y)
+                return true
+            }
+        })
+    return columnsWithPawn
 }
 
-export function canDrop(toPoint, pieceType) {
-    return true;
+function isDropPawnMate(board, player, point) {
+    const [x, y] = sumOfPoints(point, rotate([-1,0],[0,0],player.facing))
+    if(!isOnBoard(x,y)) return false
+    const piece = board[x][y]
+    if (piece.type == 4 && piece.facing != player.facing) {
+        const [x, y] = point
+        const newBoard = board.map((row) => row.slice());
+        newBoard[x][y] = new Piece(0, player.facing)
+        if (isCheckmated(newBoard, { facing: piece.facing }))
+            return true
+    } 
+    return false
 }
 
-export function canPromote(board, fromPoint, toPoint) {
-    const { currentPlayer } = useGameStore()
-    const [fromX, fromY] = fromPoint 
-    const piece = board[fromX][fromY]
-    if (inDebugMode()) return true
-    if ([0,1,3].includes(piece.type)) {
-        const [fromX, fromY] = rotate(fromPoint, [4,4], -currentPlayer.facing)
-        const [toX, toY] = rotate(toPoint, [4,4], -currentPlayer.facing)
-        return fromX  < 3 || toX < 3 
+function getDroppablePoints(board, currentPlayer, dropPiece) {
+    let droppablePoints = []
+    const pointKing = getPointKing(board, currentPlayer)
+    for (const [x, row] of board.entries()) for (const [y, piece] of row.entries())
+        if (piece.type == -1) {
+            const newBoard = board.map((row) => row.slice());
+            newBoard[x][y] = dropPiece
+            if(!isThreatened(newBoard, pointKing))
+                droppablePoints.push([x, y])
+        }
+    
+    if (dropPiece.type == 0) {
+        const columnsWithPawn = getColumnsWithPawn(board, currentPlayer)
+        droppablePoints = droppablePoints.filter((point) => {
+            const [rx,ry] = rotate(point, [4,4], -currentPlayer.facing)
+            return rx>0 && !columnsWithPawn.includes(ry) && !isDropPawnMate(board, currentPlayer, point)
+        })
     }
+
+    return droppablePoints
 }
+
