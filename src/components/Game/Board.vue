@@ -52,6 +52,7 @@ function selectSquare(x, y) {
 }
 
 function selectHint(x, y) {
+    promotionDialog.x = -1
     if (selection.dropPiece)
         drop([x, y], selection.dropPiece.type);
     else if (canPromote([x, y])) {
@@ -63,7 +64,6 @@ function selectHint(x, y) {
 }
 
 function showPromoteDialog(x, y) {
-
     const piece = board[selection.x][selection.y]
     Object.assign(
         promotionDialog,
@@ -90,6 +90,6 @@ function showPromoteDialog(x, y) {
 
 .promotionDialog {
     filter: drop-shadow(0 1vmin 1vmin #2b2b2b);
-    @apply bg-white absolute w-full h-[200%] top-0 origin-[50%_25%] flex flex-col rounded-[1vmin] z-10
+    @apply bg-white absolute w-full h-[200%] top-0 origin-[50%_25%] flex flex-col rounded-[1vmin] z-30
 }
 </style>
