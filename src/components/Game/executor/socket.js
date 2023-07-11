@@ -13,14 +13,12 @@ function convertToPiece(pieceData, rotation) {
 }
 
 function convertToPlayers(playersData, rotation) {
-    const shifts = rotation % 4;
     const players = []
     for (let i = 0; i < 4; ++i){
         const { piecesInHand, checkmated } = playersData[(i+rotation)%4]
         players.push(new Player(i, piecesInHand, checkmated))
     }
-    [...arr.slice(shifts), ...arr.slice(0, shifts)];
-    
+    return players
 }
 
 function convertToBoard(arr, rotation) {
