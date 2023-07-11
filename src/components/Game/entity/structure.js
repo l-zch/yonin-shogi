@@ -5,6 +5,13 @@ export class Piece {
     }
 }
 
+export class Player {
+    constructor(facing, piecesInHand, checkmated) {
+        this.facing = facing
+        this.piecesInHand = piecesInHand
+        this.checkmated = checkmated
+    }
+}
 
 export function createShogiBoard() {
     return Array.from({ length: 9 }, () =>
@@ -14,9 +21,10 @@ export function createShogiBoard() {
     );
 }
 
-
 export function createPlayers() {
-    return Array.from({ length: 4 }, () => {
-        return { piecesInHand: [0, 0, 0, 0] }
-    })
+    return Array.from(
+        { length: 4 }, (v, i) => {
+            return new Player(i, [0, 0, 0, 0], false)
+        }
+    )
 }

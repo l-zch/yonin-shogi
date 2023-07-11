@@ -1,7 +1,9 @@
 import { rotate } from '../entity/utils';
-import { Piece, createShogiBoard } from '../entity/structure';
+import { Piece } from '../entity/structure';
 import { useGameStore } from '../../../stores/game';
-import {} from validator
+import { getCheckedPlayers } from '../validator'
+import { isCheckmated, isThreatened } from '../entity/validator';
+
 
 export const useLocal = () => {
     return { setup, move, drop };
@@ -31,16 +33,18 @@ const promote = (piece) =>
     new Piece({ 0: 5, 1: 6, 3: 7 }[piece.type], piece.facing);
 
 function move(origin, destination, promotion) {
-    const { board, currentPlayer,players } = useGameStore();
+    const { board, currentPlayer, players } = useGameStore();
     const [fromX, fromY] = origin;
     const [toX, toY] = destination;
     const piece = board[fromX][fromY];
-    const capturedPiece = board[toX][toY]
+    const capturedPiece = board[toX][toY];
     board[fromX][fromY] = new Piece(-1, -1);
     board[toX][toY] = promotion ? promote(piece) : piece;
     if (capturedPiece.type != -1)
-        players[currentPlayer.facing].piecesInHand[[0,1,2,3,4,0,1,3][capturedPiece.type]] += 1
-    update()
+        players[currentPlayer.facing].piecesInHand[
+            [0, 1, 2, 3, 4, 0, 1, 3][capturedPiece.type]
+        ] += 1;
+    update();
 }
 
 function drop(destination, pieceType) {
@@ -48,11 +52,33 @@ function drop(destination, pieceType) {
     const [x, y] = destination;
     board[x][y] = new Piece(pieceType, currentPlayer.facing);
     players[currentPlayer.facing].piecesInHand[pieceType] -= 1;
-    update()
+    update();
+}
+
+function nextOne(players) {
+    const { currentPlayer } = useGameStore();
+    const playersRight = players.filter(player => player.facing > currentPlayer.facing)
+    return playersRight.length ? playersRight[0]: players[0]
 }
 
 function update() {
-    const { board, currentPlayer,players } = useGameStore();
+    const { board, currentPlayer, players } = useGameStore();
+    const checkedPlayers = getCheckedPlayers();
+    const nextPlayer = nextOne(
+            checkedPlayers.length
+                ? checkedPlayers
+                : players.filter((player) => !player.checkmated)
+        )
+    currentPlayer.facing = nextPlayer.facing
+    if (isCheckmated(board, players, nextPlayer.facing)) {
+        if (nextPlayer.piecesInHand.some(player => player.facing == nextPlayer.facing)) {
+            players[nextPlayer.facing].checkmated = true;
+            update();
+        } else if (!nextPlayer.piecesInHand.some((n) => n > 0)) {
+            players[nextPlayer.facing].checkmated = true;
+            update();
+        }
+    }
 
-    currentPlayer.facing = (currentPlayer.facing + 1) % 4;
 }
+    

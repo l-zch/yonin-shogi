@@ -1,5 +1,5 @@
-import { Piece } from './entity/structure';
-import { rotate, inRange, applyOnLine, includePoint, sumOfPoints } from './entity/utils';
+import { Piece } from './structure';
+import { rotate, inRange, applyOnLine, includePoint, sumOfPoints } from './utils';
 
 
 function isOnBoard(x, y) {
@@ -52,13 +52,17 @@ function getReachablePoints(board, point) {
     return reachablePoints;
 }
 
-function isThreatened(board, point) {
+function isThreatening(players, pieceThreatening, pieceThreatened) {
+    return ![pieceThreatened.facing, -1].includes(pieceThreatening.facing) && !players[pieceThreatening.facing].checkmated
+}
+
+function isThreatened(board, players, point) {
     const [x, y] = point;
     const piece = board[x][y];
     for (const [dx, dy] of [ [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1] ])
         if (
             isOnBoard(x + dx, y + dy) &&
-            board[x + dx][y + dy] != piece.facing &&
+            isThreatening(players, board[x+dx][y+dy], piece) && 
             includePoint(getReachablePoints(board, [x + dx, y + dy]), [x, y])
         )
             return true;
@@ -68,7 +72,7 @@ function isThreatened(board, point) {
         applyOnLine([x, y], rotate([0, -1], [0, 0], n), (x, y) => {
             const threateningPiece = board[x][y];
             result |=
-                threateningPiece.facing != piece.facing &&
+                isThreatening(players, threateningPiece, piece) &&
                 [3, 7].includes(threateningPiece.type);
             if (threateningPiece.type != -1) return true;
         });
@@ -77,30 +81,30 @@ function isThreatened(board, point) {
     return result;
 }
 
-function getPointKing(board, player) {
+function getPointKing(board, facing) {
     let pointKing = [];
     for (const [x, row] of board.entries())
         for (const [y, piece] of row.entries())
-            if (piece.type == 4 && piece.facing == player.facing)
+            if (piece.type == 4 && piece.facing == facing)
                 pointKing = [x, y];
     return pointKing;
 }
 
-function isCheckmated(board, player) {
+function isCheckmated(board, players, facing) {
     for (const [x, row] of board.entries())
         for (const [y, piece] of row.entries())
             if (
-                piece.facing == player.facing &&
-                getValidPoints(board, player, [x, y]).length
+                piece.facing == facing &&
+                getValidPoints(board, players, facing, [x, y]).length
             )
                 return false;
     return true;
 }
 
-function getValidPoints(board, player, point) {
+function getValidPoints(board, players, facing, point) {
     const [x, y] = point;
     const piece = board[x][y];
-    let [kingX, kingY] = getPointKing(board, player);
+    let [kingX, kingY] = getPointKing(board, facing);
     const reachablePoints = getReachablePoints(board, [x, y]);
     const validPoints = reachablePoints.filter(([toX, toY]) => {
         if (board[toX][toY].type == 4) return false;
@@ -111,21 +115,21 @@ function getValidPoints(board, player, point) {
         }
         newBoard[x][y] = new Piece(-1, -1);
         newBoard[toX][toY] = piece;
-        return !isThreatened(newBoard, [kingX, kingY]);
+        return !isThreatened(newBoard, players, [kingX, kingY]);
     });
     return validPoints;
 }
 
-function getColumnsWithPawn(board, currentPlayer) {
+function getColumnsWithPawn(board, facing) {
     const columnsWithPawn = [];
     for (let y = 0; y < 9; ++y)
         applyOnLine(
-            rotate([-1, y], [4, 4], currentPlayer.facing),
-            rotate([1, 0], [0, 0], currentPlayer.facing),
+            rotate([-1, y], [4, 4], facing),
+            rotate([1, 0], [0, 0], facing),
             (x, y) => {
                 const piece = board[x][y];
-                if (piece.type == 0 && piece.facing == currentPlayer.facing) {
-                    columnsWithPawn.push(currentPlayer.facing % 2 ? x : y);
+                if (piece.type == 0 && piece.facing == facing) {
+                    columnsWithPawn.push(facing % 2 ? x : y);
                     return true;
                 }
             }
@@ -133,42 +137,44 @@ function getColumnsWithPawn(board, currentPlayer) {
     return columnsWithPawn;
 }
 
-function isDropPawnMate(board, player, point) {
-    const [x, y] = sumOfPoints(point, rotate([-1, 0], [0, 0], player.facing));
+function isDropPawnMate(board, players, facing, point) {
+    const [x, y] = sumOfPoints(point, rotate([-1, 0], [0, 0], facing));
     if (!isOnBoard(x, y)) return false;
     const piece = board[x][y];
-    if (piece.type == 4 && piece.facing != player.facing) {
+    if (piece.type == 4 && piece.facing != facing) {
         const [x, y] = point;
         const newBoard = board.map((row) => row.slice());
-        newBoard[x][y] = new Piece(0, player.facing);
-        if (isCheckmated(newBoard, { facing: piece.facing })) return true;
+        newBoard[x][y] = new Piece(0, facing);
+        if (isCheckmated(newBoard, players,{ facing: piece.facing })) return true;
     }
     return false;
 }
 
-function getDroppablePoints(board, currentPlayer, dropPiece) {
+function getDroppablePoints(board, players, facing, dropPiece) {
     let droppablePoints = [];
-    const pointKing = getPointKing(board, currentPlayer);
+    const pointKing = getPointKing(board, facing);
     for (const [x, row] of board.entries())
         for (const [y, piece] of row.entries())
             if (piece.type == -1) {
                 const newBoard = board.map((row) => row.slice());
                 newBoard[x][y] = dropPiece;
-                if (!isThreatened(newBoard, pointKing))
+                if (!isThreatened(newBoard, players, pointKing))
                     droppablePoints.push([x, y]);
             }
 
     if (dropPiece.type == 0) {
-        const columnsWithPawn = getColumnsWithPawn(board, currentPlayer);
+        const columnsWithPawn = getColumnsWithPawn(board, facing);
         droppablePoints = droppablePoints.filter((point) => {
-            const [rx, ry] = rotate(point, [4, 4], -currentPlayer.facing);
+            const [rx, ry] = rotate(point, [4, 4], -facing);
             return (
                 rx > 0 &&
                 !columnsWithPawn.includes(ry) &&
-                !isDropPawnMate(board, currentPlayer, point)
+                !isDropPawnMate(board,players, facing, point)
             );
         });
     }
 
     return droppablePoints;
 }
+
+export { getValidPoints, getDroppablePoints, isCheckmated, getPointKing, isThreatened }
