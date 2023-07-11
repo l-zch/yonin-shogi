@@ -15,10 +15,10 @@
                         :style="{ transform: `rotate(${90*promotionDialog.facing}deg) ` }">
                         <Piece :facing="promotionDialog.facing" :type="[5, 6, -1, 7, -1, 5, 6, 7][promotionDialog.type]"
                             :selected="false" @click="promotionDialog.confirm(true)"></Piece>
-                        <Piece :facing="promotionDialog.facing" :type="[0, 1, 2, 3, 4, 0, 1, 3][promotionDialog.type]" :selected=" false"
+                        <Piece :facing="promotionDialog.facing" :type="[0, 1, 2, 3, 4, 0, 1, 3][promotionDialog.type]" :selected="false"
                             @click="promotionDialog.confirm(false)"></Piece>
                     </div>
-                    <div class="absolute w-full h-full flex top-0" v-if="hint[i-1][j-1]" @click="selectHint(i-1, j-1)">
+                    <div class="absolute w-full h-full flex top-0 z-10" v-if="hint[i-1][j-1]" @click="selectHint(i-1, j-1)">
                         <div class="m-auto top-1/2 w-[20%] h-[20%] rounded-[50%] bg-slate-500 bg-opacity-70" v-if="!(mode.value == 'debug')"></div>
                     </div>
                 </div>
@@ -54,7 +54,7 @@ function selectSquare(x, y) {
 function selectHint(x, y) {
     if (selection.dropPiece)
         drop([x, y], selection.dropPiece.type);
-    else if (canPromote(board, [selection.x, selection.y], [x, y])) {
+    else if (canPromote([x, y])) {
         showPromoteDialog(x, y)
         return
     } else

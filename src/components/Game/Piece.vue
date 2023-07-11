@@ -1,6 +1,6 @@
 <template>
     <div :class="['transition-all', props.selected ? 'selected' : '']">
-        <div class="aspect-square relative w-full h-full flex select-none" :style="{ transform: `scale(${size[type]})` }">
+        <div class="aspect-square z-10 relative w-full h-full flex select-none" :style="{ transform: `scale(${size[type]})` }">
             <div class="max-w-[50%] h-[70%] z-10 m-auto aspect-[3/4]"
                 :style="{
                      'height': `${size[type] * 70}%`, 
