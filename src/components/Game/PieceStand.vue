@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-red-400  flex flex-row">
+    <div class="bg-red-400 flex flex-row h-full">
         <div v-for="(number, type) in players[props.facing].piecesInHand"
             :class="['relative h-full', number == 0 ? 'opacity-60' : '']" @click="selectPiece(type, number)">
             <div class="absolute text-[3vmin] shadow-white top-0 right-[10%] z-20 text-stroke"> {{ number }} </div>
