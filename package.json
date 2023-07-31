@@ -11,7 +11,8 @@
     "gh-pages": "^5.0.0",
     "pinia": "^2.1.4",
     "socket.io-client": "^4.7.1",
-    "vue": "^3.2.25"
+    "vue": "^3.2.25",
+    "vue-router": "^4.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.0.0",
