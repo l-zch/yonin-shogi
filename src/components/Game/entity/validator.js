@@ -145,7 +145,7 @@ function isDropPawnMate(board, players, facing, point) {
         const [x, y] = point;
         const newBoard = board.map((row) => row.slice());
         newBoard[x][y] = new Piece(0, facing);
-        if (isCheckmated(newBoard, players,{ facing: piece.facing })) return true;
+        if (isCheckmated(newBoard, players, piece.facing)) return true;
     }
     return false;
 }
