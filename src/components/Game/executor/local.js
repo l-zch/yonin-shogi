@@ -71,7 +71,7 @@ function update() {
         )
     currentPlayer.facing = nextPlayer.facing
     if (isCheckmated(board, players, nextPlayer.facing)) {
-        if (nextPlayer.piecesInHand.some(player => player.facing == nextPlayer.facing)) {
+        if (checkedPlayers.some(player => player.facing == nextPlayer.facing)) {
             players[nextPlayer.facing].checkmated = true;
             update();
         } else if (!nextPlayer.piecesInHand.some((n) => n > 0)) {
