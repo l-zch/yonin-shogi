@@ -3,8 +3,8 @@ import { reactive } from 'vue';
 import {
     createShogiBoard,
     createPlayers
-} from '../components/Game/entity/structure';
-import { getValidities } from '../components/Game/validator';
+} from '../components/game/entity/structure';
+import { getValidities } from '../components/game/validator';
 
 export const useGameStore = defineStore('game', () => {
     const viewer = reactive({ id: 0 });
