@@ -10,10 +10,9 @@
 </template>
 
 <script setup>
-import Board from "./Game/Board.vue";
-import Dashboard from './Dashboard.vue';
-import InfoBar from "./Game/InfoBar.vue";
-import { setup } from "./Game/executor"
+import Board from "../components/game/Board.vue";
+import InfoBar from "../components/game/InfoBar.vue";
+import { setup } from "../components/game/executor"
 import { useGameStore } from "../stores/game"
 
 const { viewer } = useGameStore()
