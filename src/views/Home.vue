@@ -8,8 +8,8 @@
                 </RouterLink>
                 <div class="flex h-[40cqh] w-full">
                     <button class="button-muted grow mr-[10cqh] text-[min(10cqw,25cqh)]">四人將棋規則</button>
-                    <button class="button-inverted h-full aspect-square flex">
-                        <v-icon class="m-auto text-[rgb(var(--v-theme-text-inverted))]" size="35cqh" icon="mdi:mdi-github" />
+                    <button @click="window.open('https://github.com/l-zch/yonin-shogi', '_blank')" class="button-inverted h-full aspect-square flex relative">
+                        <v-icon  class="m-auto text-[rgb(var(--v-theme-text-inverted))]" size="35cqh" icon="mdi:mdi-github" />
                     </button>
                 </div>
             </div>
