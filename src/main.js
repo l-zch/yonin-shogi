@@ -7,6 +7,7 @@ import { vuetify } from './plugins/vuetify';
 
 const pinia = createPinia()
 const app = createApp(App)
+app.config.globalProperties.window = window
 app.use(router)
 app.use(pinia)
 app.use(vuetify)
