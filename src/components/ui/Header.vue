@@ -1,9 +1,9 @@
 <template>
-    <div class="container text-center flex flex-col justify-center select-none">
-        <div class="text-[rgb(var(--v-theme-text-base))] leading-none"
-            :style="{ fontSize: `${100 / props.title.length - 0.2}cqw` }">{{ props.title }}</div>
-        <div class="text-[rgb(var(--v-theme-text-muted))] leading-none"
-            :style="{ fontSize: `${100 / props.subtitle.length - 0.2}cqw` }">{{ props.subtitle }}</div>
+    <div class="container text-center flex flex-col justify-center select-none leading-none">
+        <text class="text-[rgb(var(--v-theme-text-base))] whitespace-nowrap"
+            :style="{ fontSize: `${100 / props.title.length }cqw` }">{{ props.title }}</text>
+        <text class="text-[rgb(var(--v-theme-text-muted))] whitespace-nowrap"
+            :style="{ fontSize: `${100 / props.subtitle.length }cqw` }">{{ props.subtitle }}</text>
     </div>
 </template>
 
